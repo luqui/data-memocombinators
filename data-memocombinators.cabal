@@ -1,7 +1,7 @@
 Name: data-memocombinators
 Description:
     Combinators for building memo tables.
-Version: 0.3
+Version: 0.4.0
 Stability: experimental
 Synopsis: Combinators for building memo tables.
 License: BSD3
@@ -9,6 +9,6 @@ Category: Data
 Author: Luke Palmer
 Maintainer: lrpalmer@gmail.com
 Build-Type: Simple
-Build-Depends: base, array
+Build-Depends: base, array, data-inttrie
 Exposed-Modules: Data.MemoCombinators
 Extensions: Rank2Types, ScopedTypeVariables

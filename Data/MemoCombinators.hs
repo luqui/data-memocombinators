@@ -1,7 +1,7 @@
 ------------------------------------------------
 -- |
 -- Module    : Data.MemoCombinators
--- Copyright : (c) Luke Palmer 2008
+-- Copyright : (c) Luke Palmer 2008-2010
 -- License   : BSD3
 --
 -- Maintainer : Luke Palmer <lrpalmer@gmail.com>
@@ -31,7 +31,8 @@ module Data.MemoCombinators
     , wrap
     , memo2, memo3, memoSecond, memoThird
     , bool, char, list, boundedList, either, maybe, unit, pair
-    , switch, integral, bits, unsignedBits
+    , integral, bits
+    , switch
     , RangeMemo
     , arrayRange, unsafeArrayRange, chunks
     )
@@ -41,6 +42,7 @@ import Prelude hiding (either, maybe)
 import Data.Bits
 import qualified Data.Array as Array
 import Data.Char (ord,chr)
+import qualified Data.IntTrie as IntTrie
 
 -- | The type of a memo table for functions of a.
 type Memo a = forall r. (a -> r) -> (a -> r)
@@ -108,6 +110,14 @@ unit f = let m = f () in \() -> m
 pair :: Memo a -> Memo b -> Memo (a,b)
 pair m m' f = uncurry (m (\x -> m' (\y -> f (x,y))))
 
+-- | Memoize an integral type.  
+integral :: (Integral a) => Memo a
+integral = wrap fromInteger toInteger bits
+
+-- | Memoize an ordered type with a bits instance.
+bits :: (Ord a, Bits a) => Memo a
+bits f = IntTrie.apply (fmap f IntTrie.identity)
+
 -- | @switch p a b@ uses the memo table a whenever p gives
 -- true and the memo table b whenever p gives false.
 switch :: (a -> Bool) -> Memo a -> Memo a -> Memo a
@@ -115,49 +125,6 @@ switch p m m' f = table (m f) (m' f)
     where
     table t f x | p x       = t x
                 | otherwise = f x
-
--- | Memoize an integral type.
-integral :: (Integral a) => Memo a
-integral = switch (>= 0) unsignedIntegral (\f -> unsignedIntegral (f . negate) . negate)
-
-integralBits :: (Integral a) => a -> [Bool]
-integralBits 0 = []
-integralBits x = let (q,r) = quotRem x 2 in toBool r : integralBits q
-    where
-    toBool 0 = False
-    toBool 1 = True
-
-integralFromBits :: (Integral a) => [Bool] -> a
-integralFromBits [] = 0
-integralFromBits (x:xs) = unbit x + 2*integralFromBits xs
-    where unbit True = 1 ; unbit False = 0
-
-unsignedIntegral :: (Integral a) => Memo a
-unsignedIntegral f = list bool (f . integralFromBits) . integralBits
-
-
--- | Memoize an ordered type with a bits instance.  Good for most integral
--- types.
-bits :: forall a. (Ord a, Bits a) => Memo a
-bits | isSigned (undefined :: a) 
-            = switch (>= 0) unsignedBits (\f -> unsignedBits (f . negate) . negate)
-     | otherwise = unsignedBits
-       
--- | Memoize an unsigned type with a bits instance.  Good for nonnegative
--- integral types.  Warning: if a negative @Integer@ is given to an
--- @unsignedBits@-ized function, it will loop forever.
-unsignedBits :: (Bits a) => Memo a
-unsignedBits f = list bool (f . unsignedFromBits) . unsignedToBits
-
-unsignedToBits :: (Bits a) => a -> [Bool]
-unsignedToBits 0 = []
-unsignedToBits x = testBit x 0 : unsignedToBits (shiftR x 1)
-
-unsignedFromBits :: (Bits a) => [Bool] -> a
-unsignedFromBits [] = 0
-unsignedFromBits (x:xs)  = unbit x .|. shiftL (unsignedFromBits xs) 1
-    where unbit True = 1 ; unbit False = 0
-
 
 -- | The type of builders for ranged tables; takes a lower bound and an upper
 -- bound, and returns a memo table for that range.
