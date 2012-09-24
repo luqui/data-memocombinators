@@ -115,7 +115,7 @@ integral :: (Integral a) => Memo a
 integral = wrap fromInteger toInteger bits
 
 -- | Memoize an ordered type with a bits instance.
-bits :: (Ord a, Bits a) => Memo a
+bits :: (Ord a, Num a, Bits a) => Memo a
 bits f = IntTrie.apply (fmap f IntTrie.identity)
 
 -- | @switch p a b@ uses the memo table a whenever p gives
