@@ -26,7 +26,7 @@
 -- >    fib' x = fib (x-1) + fib (x-2)
 ------------------------------------------------
 
-module Data.MemoCombinators 
+module Data.MemoCombinators
     ( Memo
     , wrap
     , memo2, memo3, memoSecond, memoThird
@@ -48,7 +48,7 @@ import qualified Data.IntTrie as IntTrie
 type Memo a = forall r. (a -> r) -> (a -> r)
 
 -- | Given a memoizer for a and an isomorphism between a and b, build
--- a memoizer for b. 
+-- a memoizer for b.
 wrap :: (a -> b) -> (b -> a) -> Memo a -> Memo b
 wrap i j m f = m (f . i) . j
 
@@ -110,7 +110,7 @@ unit f = let m = f () in \() -> m
 pair :: Memo a -> Memo b -> Memo (a,b)
 pair m m' f = uncurry (m (\x -> m' (\y -> f (x,y))))
 
--- | Memoize an integral type.  
+-- | Memoize an integral type.
 integral :: (Integral a) => Memo a
 integral = wrap fromInteger toInteger bits
 
