@@ -31,7 +31,7 @@ module Data.MemoCombinators
     , wrap
     , memo2, memo3, memoSecond, memoThird
     , bool, char, list, boundedList, either, maybe, unit, pair
-    , integral, bits
+    , enum, integral, bits
     , switch
     , RangeMemo
     , arrayRange, unsafeArrayRange, chunks
@@ -109,6 +109,10 @@ unit f = let m = f () in \() -> m
 
 pair :: Memo a -> Memo b -> Memo (a,b)
 pair m m' f = uncurry (m (\x -> m' (\y -> f (x,y))))
+
+-- | Memoize an enum type.
+enum :: (Enum a) => Memo a
+enum = wrap toEnum fromEnum integral
 
 -- | Memoize an integral type.
 integral :: (Integral a) => Memo a
