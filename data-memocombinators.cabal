@@ -1,7 +1,7 @@
 Name: data-memocombinators
 Description:
     Combinators for building memo tables.
-Version: 0.4.5
+Version: 0.5.0
 Stability: experimental
 Synopsis: Combinators for building memo tables.
 License: BSD3
@@ -11,5 +11,5 @@ Homepage: http://github.com/luqui/data-memocombinators
 Maintainer: lrpalmer@gmail.com
 Build-Type: Simple
 Build-Depends: base >= 3 && < 5, array, data-inttrie
-Exposed-Modules: Data.MemoCombinators
+Exposed-Modules: Data.MemoCombinators, Data.MemoCombinators.Class
 Extensions: Rank2Types, ScopedTypeVariables
