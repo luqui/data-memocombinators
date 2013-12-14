@@ -74,6 +74,8 @@ instance (MemoTable a, MemoTable b, MemoTable c, MemoTable d, MemoTable e, MemoT
 
 instance (MemoTable a) => MemoTable [a] where table = Memo.list table
 instance (MemoTable a) => MemoTable (Maybe a) where table = Memo.maybe table
+instance (MemoTable a, MemoTable b) => MemoTable (Either a b) where 
+    table = Memo.either table table
 instance (Integral a, MemoTable a) => MemoTable (Ratio a) where
     table = Memo.wrap (uncurry (%)) (numerator &&& denominator) table
 

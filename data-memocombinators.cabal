@@ -1,7 +1,7 @@
 Name: data-memocombinators
 Description:
     Combinators for building memo tables.
-Version: 0.5.0
+Version: 0.5.1
 Stability: experimental
 Synopsis: Combinators for building memo tables.
 License: BSD3
