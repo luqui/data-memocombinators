@@ -150,6 +150,6 @@ unsafeArrayRange rng f = (Array.listArray rng (map f (Array.range rng)) Array.!)
 chunks :: (Array.Ix a) => RangeMemo a -> [(a,a)] -> Memo a
 chunks rmemo cs f = lookup (cs `zip` map (\rng -> rmemo rng f) cs)
     where
-    lookup [] _ = error "Element non in table"
+    lookup [] _ = error "Element not in table"
     lookup ((r,c):cs) x | Array.inRange r x = c x
                         | otherwise = lookup cs x
