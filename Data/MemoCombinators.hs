@@ -44,11 +44,11 @@ import qualified Data.Array as Array
 import Data.Char (ord,chr)
 import qualified Data.IntTrie as IntTrie
 
--- | The type of a memo table for functions of a.
+-- | The type of a memo table for functions of type @a@.
 type Memo a = forall r. (a -> r) -> (a -> r)
 
--- | Given a memoizer for a and an isomorphism between a and b, build
--- a memoizer for b.
+-- | Given a memoizer for @a@ and an isomorphism between @a@ and @b@, build
+-- a memoizer for @b@.
 wrap :: (a -> b) -> (b -> a) -> Memo a -> Memo b
 wrap i j m f = m (f . i) . j
 
@@ -122,8 +122,8 @@ integral = wrap fromInteger toInteger bits
 bits :: (Num a, Ord a, Bits a) => Memo a
 bits f = IntTrie.apply (fmap f IntTrie.identity)
 
--- | @switch p a b@ uses the memo table a whenever p gives
--- true and the memo table b whenever p gives false.
+-- | @switch p a b@ uses the memo table @a@ whenever @p@ gives
+-- true and the memo table @b@ whenever @p@ gives false.
 switch :: (a -> Bool) -> Memo a -> Memo a -> Memo a
 switch p m m' f = table (m f) (m' f)
     where
